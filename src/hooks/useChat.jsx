@@ -13,7 +13,9 @@ export const ChatProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [cameraZoomed, setCameraZoomed] = useState(true);
   const [sessionId, setSessionId] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('authToken'));
+  const [token, setToken] = useState(localStorage.getItem('authToken') || null);
+  const [nama, setNama] = useState(localStorage.getItem('nama') || null); // Ambil nama dari localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
 
   const chat = async (message) => {
     setLoading(true);
@@ -22,15 +24,17 @@ export const ChatProvider = ({ children }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // "Authorization" : `Bareer ${token}`
+          "Authorization" : `Bearer ${token}` // Perbaiki typo dari 'Bareer' ke 'Bearer'
         },
         body: JSON.stringify({
           "question": message,
-          "sessionId": sessionId
+          "sessionId": sessionId, 
+          "nama" : nama
         }),
       });
       const response = await data.json();
       console.log(response)
+
       if(response.messages){
         const rawMessages = response.text;
         setRawMessages(rawMessages);
@@ -41,6 +45,13 @@ export const ChatProvider = ({ children }) => {
       setLoading(false);
     } catch (error) {
       console.error("Terjadi kesalahan:", error);
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: error.message,
+        showCloseButton: false,
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }
@@ -51,9 +62,8 @@ export const ChatProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('authToken');
-    if (storedToken) {
-      setToken(storedToken);
+    if (token) {
+      setIsAuthenticated(true);
     }
 
     if (messages.length > 0) {
@@ -61,7 +71,14 @@ export const ChatProvider = ({ children }) => {
     } else {
       setMessage(null);
     }
-  }, [messages]);
+  }, [messages, token]);
+
+  // Simpan nama ke localStorage saat berubah
+  useEffect(() => {
+    if (nama) {
+      localStorage.setItem('nama', nama);
+    }
+  }, [nama]);
 
   return (
     <ChatContext.Provider
@@ -74,7 +91,11 @@ export const ChatProvider = ({ children }) => {
         setCameraZoomed,
         sessionId,
         setSessionId,
-        rawMessages
+        rawMessages, 
+        nama,
+        setNama,
+        isAuthenticated,
+        setIsAuthenticated,
       }}
     >
       {children}

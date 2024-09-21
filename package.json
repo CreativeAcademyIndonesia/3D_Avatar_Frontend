@@ -18,12 +18,15 @@
     "@react-three/fiber": "8.13.3",
     "@react-three/xr": "^5.7.1",
     "@types/three": "0.152.1",
+    "file-saver": "^2.0.5",
     "leva": "^0.9.35",
     "marked": "^14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.26.1",
+    "sweetalert2": "^11.14.0",
     "three": "0.153.0",
+    "xlsx": "^0.18.5",
     "yarn": "^1.22.22"
   },
   "devDependencies": {

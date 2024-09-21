@@ -25,3 +25,12 @@ body {
 * {
   font-family: 'Exo 2', sans-serif;
 }
+
+.modal {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.modal.show {
+  opacity: 1;
+}
