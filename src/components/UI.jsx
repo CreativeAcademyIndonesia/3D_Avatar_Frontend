@@ -2,18 +2,49 @@ import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { marked } from 'marked';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlassPlus, faMagnifyingGlassMinus, faEraser } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlassPlus, faMagnifyingGlassMinus, faEraser, faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
 export const UI = ({ hidden, ...props }) => {
   const input = useRef();
   const { chat, loading, cameraZoomed, setCameraZoomed, message, sessionId, rawMessages, setSessionId, nama } = useChat();
   const sendMessage = () => {
+    console.log('start')
     const text = input.current.value;
     if (!loading && !message) {
       chat(text);
       input.current.value = "";
     }
   };
+
+  const startSpeechRecognition = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+  
+    // Set bahasa ke Bahasa Indonesia
+    recognition.lang = 'id-ID'; // 'id-ID' adalah kode bahasa untuk Bahasa Indonesia
+  
+    recognition.onstart = () => {
+      console.log("Voice recognition started. Speak into the microphone.");
+    };
+  
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      input.current.value = transcript; // Masukkan hasil ke input
+      sendMessage(); // Kirim pesan
+    };
+  
+    recognition.onend = () => {
+      console.log("Voice recognition ended.");
+      // setTimeout(sendMessage, 3000); // Kirim pesan setelah 3 detik (jika perlu)
+    };
+  
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+    };
+  
+    recognition.start();
+  };
+
   if (hidden) {
     return null;
   }
@@ -40,11 +71,16 @@ export const UI = ({ hidden, ...props }) => {
             <button
               disabled={loading || message}
               onClick={sendMessage}
-              className={`bg-[#4651CE] hover:bg-[#3640ac] text-white p-4 px-10 font-semibold uppercase rounded-2xl ${
+              className={`bg-[#4651CE] hover:bg-[#3640ac] text-white p-4 px-6 font-semibold uppercase rounded-2xl ${
                 loading || message ? "cursor-not-allowed opacity-30" : ""
               }`}
             >
               Send
+            </button>
+            <button 
+              onClick={startSpeechRecognition}
+              className={`bg-[#4651CE] hover:bg-[#3640ac] text-white p-4 px-4 font-semibold uppercase rounded-2xl ${loading || message ? "cursor-not-allowed opacity-30" : ""}`}>
+              <FontAwesomeIcon icon={faMicrophone} />
             </button>
           </div>
         </div>

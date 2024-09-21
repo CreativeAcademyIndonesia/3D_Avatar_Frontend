@@ -37,8 +37,6 @@ function App() {
           }
         />
 
-        {/* <Route path="/" element={<Mainavatar />} />
-        <Route path="/dashboard" element={<Dashboard />} /> */}
       </Routes>
     </Router>
   );
