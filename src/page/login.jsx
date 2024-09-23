@@ -7,7 +7,7 @@ const backendUrl = import.meta.env.VITE_GCC_NODE_SERVER;
 export function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { setIsAuthenticated, setNama } = useChat();
+  const {setIsAuthenticated, setNama, token, setToken } = useChat();
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ export function Login() {
     e.preventDefault();
     setError('');
     try {
-      const response = await fetch(`${backendUrl}/avatar/chat/login`, {
+      const response = await fetch(`${backendUrl}avatar/chat/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,6 +32,7 @@ export function Login() {
       localStorage.setItem('authToken', data.token);
       setIsAuthenticated(true);
       setNama(username)
+      setToken(data.token)
       navigate('/'); // Navigasi ke halaman utama setelah berhasil login
       return data.token;
     } catch (error) {

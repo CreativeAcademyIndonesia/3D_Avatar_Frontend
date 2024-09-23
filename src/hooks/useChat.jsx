@@ -20,7 +20,7 @@ export const ChatProvider = ({ children }) => {
   const chat = async (message) => {
     setLoading(true);
     try {
-      const data = await fetch(`${backendUrl}/avatar/chat`, {
+      const data = await fetch(`${backendUrl}avatar/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,6 +63,7 @@ export const ChatProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
+      console.log(token)
       setIsAuthenticated(true);
     }
 
@@ -94,6 +95,8 @@ export const ChatProvider = ({ children }) => {
         rawMessages, 
         nama,
         setNama,
+        setToken,
+        token,
         isAuthenticated,
         setIsAuthenticated,
       }}

@@ -18,7 +18,7 @@ export function Dashboard() {
 
   const fetchChatHistory = async () => {
     try {
-      const response = await fetch(`${backendUrl}/avatar/chat/history?month=${month}`);
+      const response = await fetch(`${backendUrl}avatar/chat/history?month=${month}`);
       if (!response.ok) {
         throw new Error('Gagal mengambil data chat history');
       }
@@ -49,7 +49,7 @@ export function Dashboard() {
 
   const fetchChatDetails = async (session) => {
     try {
-      const response = await fetch(`${backendUrl}/avatar/chat/history-details?session=${session}`);
+      const response = await fetch(`${backendUrl}avatar/chat/history-details?session=${session}`);
       if (!response.ok) {
         throw new Error('Gagal mengambil detail chat');
       }
@@ -70,7 +70,7 @@ export function Dashboard() {
   const fetchAnalytics = async (nama, session) => {
     setAnalyticsLoading(true);
     try {
-      const response = await fetch(`${backendUrl}/avatar/chat/analisa`, {
+      const response = await fetch(`${backendUrl}avatar/chat/analisa`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
