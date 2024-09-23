@@ -52,7 +52,7 @@ export const UI = ({ hidden, ...props }) => {
   return (
     <>
       <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-between p-4 flex-col pointer-events-none ">
-        <div className=" w-1/3 flex flex-col gap-2 justify-between h-full">
+        <div className="w-full md:w-1/3 flex flex-col gap-2 justify-between h-full">
           <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-xl border-2 border-[#4651CE] w-full">
             <h1 className="font-semibold text-xl text-[#4651CE]">Teman Curhat</h1>
             <p className="text-sm text-slate-800" dangerouslySetInnerHTML={{ __html: rawMessages ? marked(Array.isArray(rawMessages) ? rawMessages.join('\n') : rawMessages) : "Belum ada pesan" }}></p>
@@ -84,7 +84,7 @@ export const UI = ({ hidden, ...props }) => {
             </button>
           </div>
         </div>
-        <div className="fixed  bottom-4 right-4">
+        <div className="fixed bottom-32 md:bottom-4 right-4">
           <div className="flex flex-col">
             <span className="text-white text-sm leading-none">Active</span>
             <span className="text-white font-semibold text-lg">{nama || "-"}</span>
@@ -112,7 +112,7 @@ export const UI = ({ hidden, ...props }) => {
             </button>
           </div>
         </div>
-        <div className="fixed bottom-8 w-1/2 translate-x-1/2">
+        <div className="fixed bottom-24 md:bottom-8 w-1/2 translate-x-1/2">
           <p className="text-lg text-white text-center" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>{message ? message.text : "Belum ada pesan"}</p>
         </div>
       </div>

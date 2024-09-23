@@ -43,6 +43,7 @@ export const Experience = () => {
 
   useEffect(() => {
     cameraControls.current.setLookAt(0, 2, 5, 0, 1.5, 0);
+    // cameraControls.current.setLookAt(0, 3, 3, 0, 1.5, 0, true);
   }, []);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export const Experience = () => {
       <Suspense>
         <Dots position-y={1.75} position-x={-0.02} />
       </Suspense>
-      <Avatar />
+      <Avatar position={[-0.07, 0, 0]} /> 
       <ContactShadows opacity={0.7} />
     </>
   );
