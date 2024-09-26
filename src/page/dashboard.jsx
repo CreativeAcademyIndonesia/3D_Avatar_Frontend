@@ -44,6 +44,41 @@ export function Dashboard() {
       setLoading(false);
     }
   };
+
+  const deleteChatHistory = async (session) => {
+    try {
+      const response = await fetch(`${backendUrl}avatar/chat/history`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ session }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Gagal menghapus riwayat chat');
+      }
+  
+      const result = await response.json();
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Chat history has been successfully deleted.',
+      });
+  
+      // Fetch the updated chat history after deletion
+      await fetchChatHistory();
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Delete Failed!',
+        text: error.message,
+        showCloseButton: false,
+        showConfirmButton: false,
+      });
+      console.error('Error deleting chat history:', error);
+    }
+  };
   
   useEffect(() => {
     // Pengecekan jika nama bukan 'adminsupport', maka navigate ke '/'
@@ -200,6 +235,12 @@ export function Dashboard() {
                       disabled={analyticsLoading} 
                     >
                       {analyticsLoading ? 'Loading...' : 'Analytics'}
+                    </button>
+                    <button 
+                      onClick={() => deleteChatHistory(item.session)} 
+                      className="bg-red-500 px-4 py-2 rounded-xl text-white"
+                    >
+                      Delete
                     </button>
                   </div>
                 </td>

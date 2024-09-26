@@ -119,6 +119,14 @@ export const UI = ({ hidden, ...props }) => {
             >
               <FontAwesomeIcon icon={faEraser} />
             </button>
+            {nama === "adminsupport" && (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
+              >
+                Dashboard
+              </button>
+            )}
             <button
               onClick={logout}
               className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
