@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import excel from '../assets/images/excel.png';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useChat } from '../hooks/useChat';
 
 const backendUrl = import.meta.env.VITE_GCC_NODE_SERVER;
 
@@ -15,7 +16,8 @@ export function Dashboard() {
   const [analyticsLoading, setAnalyticsLoading] = useState(false); 
   const [month, setMonth] = useState(new Date().getMonth() + 1); // Bulan 1-12
   const navigate = useNavigate();
-
+  const { nama } = useChat();
+  
   const fetchChatHistory = async () => {
     try {
       const response = await fetch(`${backendUrl}avatar/chat/history?month=${month}`);
@@ -42,10 +44,17 @@ export function Dashboard() {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
-    fetchChatHistory(); 
-  }, [month]);
+    // Pengecekan jika nama bukan 'adminsupport', maka navigate ke '/'
+    if (nama !== 'adminsupport') {
+      navigate('/');
+      return; // Jangan lanjutkan ke fetch data jika sudah navigate
+    }
+  
+    // Jika nama adalah 'adminsupport', fetch data
+    fetchChatHistory();
+  }, [month, nama, navigate]);
 
   const fetchChatDetails = async (session) => {
     try {

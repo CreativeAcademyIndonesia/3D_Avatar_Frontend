@@ -2,11 +2,13 @@ import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { marked } from 'marked';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlassPlus, faMagnifyingGlassMinus, faEraser, faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlassPlus, faMagnifyingGlassMinus, faEraser, faMicrophone, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from "react-router-dom";
 
 export const UI = ({ hidden, ...props }) => {
   const input = useRef();
   const { chat, loading, cameraZoomed, setCameraZoomed, message, sessionId, rawMessages, setSessionId, nama } = useChat();
+  const navigate = useNavigate(); // Gunakan hook useNavigate
   const sendMessage = () => {
     console.log('start')
     const text = input.current.value;
@@ -14,6 +16,14 @@ export const UI = ({ hidden, ...props }) => {
       chat(text);
       input.current.value = "";
     }
+  };
+
+  const logout = () => {
+    // Hapus authToken dari localStorage
+    localStorage.removeItem('authToken');
+  
+    // Navigasi ke halaman login
+    navigate('/login'); // Panggil navigate untuk mengarahkan ke halaman login
   };
 
   const startSpeechRecognition = () => {
@@ -35,7 +45,6 @@ export const UI = ({ hidden, ...props }) => {
   
     recognition.onend = () => {
       console.log("Voice recognition ended.");
-      // setTimeout(sendMessage, 3000); // Kirim pesan setelah 3 detik (jika perlu)
     };
   
     recognition.onerror = (event) => {
@@ -109,6 +118,12 @@ export const UI = ({ hidden, ...props }) => {
               className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
             >
               <FontAwesomeIcon icon={faEraser} />
+            </button>
+            <button
+              onClick={logout}
+              className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
+            >
+              <FontAwesomeIcon icon={faRightFromBracket} />
             </button>
           </div>
         </div>
