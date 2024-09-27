@@ -21,7 +21,7 @@ export const UI = ({ hidden, ...props }) => {
   const logout = () => {
     // Hapus authToken dari localStorage
     localStorage.removeItem('authToken');
-  
+
     // Navigasi ke halaman login
     navigate('/login'); // Panggil navigate untuk mengarahkan ke halaman login
   };
@@ -29,28 +29,28 @@ export const UI = ({ hidden, ...props }) => {
   const startSpeechRecognition = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-  
+
     // Set bahasa ke Bahasa Indonesia
     recognition.lang = 'id-ID'; // 'id-ID' adalah kode bahasa untuk Bahasa Indonesia
-  
+
     recognition.onstart = () => {
       console.log("Voice recognition started. Speak into the microphone.");
     };
-  
+
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       input.current.value = transcript; // Masukkan hasil ke input
       sendMessage(); // Kirim pesan
     };
-  
+
     recognition.onend = () => {
       console.log("Voice recognition ended.");
     };
-  
+
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
     };
-  
+
     recognition.start();
   };
 
@@ -80,13 +80,12 @@ export const UI = ({ hidden, ...props }) => {
             <button
               disabled={loading || message}
               onClick={sendMessage}
-              className={`bg-[#4651CE] hover:bg-[#3640ac] text-white p-4 px-6 font-semibold uppercase rounded-2xl ${
-                loading || message ? "cursor-not-allowed opacity-30" : ""
-              }`}
+              className={`bg-[#4651CE] hover:bg-[#3640ac] text-white p-4 px-6 font-semibold uppercase rounded-2xl ${loading || message ? "cursor-not-allowed opacity-30" : ""
+                }`}
             >
               Send
             </button>
-            <button 
+            <button
               onClick={startSpeechRecognition}
               className={`bg-[#4651CE] hover:bg-[#3640ac] text-white p-4 px-4 font-semibold uppercase rounded-2xl ${loading || message ? "cursor-not-allowed opacity-30" : ""}`}>
               <FontAwesomeIcon icon={faMicrophone} />
@@ -103,7 +102,7 @@ export const UI = ({ hidden, ...props }) => {
             <span className="text-white font-semibold text-lg">{sessionId || "-"}</span>
           </div>
           <div className="flex gap-2">
-            <button
+            {/* <button
               onClick={() => setCameraZoomed(!cameraZoomed)}
               className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
             >
@@ -112,7 +111,7 @@ export const UI = ({ hidden, ...props }) => {
               ) : (
                 <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
               )}
-            </button>
+            </button> */}
             <button
               onClick={() => setSessionId(null)}
               className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
