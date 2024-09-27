@@ -134,9 +134,9 @@ export const UI = ({ hidden, ...props }) => {
             </button>
           </div>
         </div>
-        <div className="fixed bottom-24 md:bottom-8 w-1/2 translate-x-1/2">
+        {/* <div className="fixed bottom-24 md:bottom-8 w-1/2 translate-x-1/2">
           <p className="text-lg text-white text-center" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>{message ? message.text : "Belum ada pesan"}</p>
-        </div>
+        </div> */}
       </div>
     </>
   );
