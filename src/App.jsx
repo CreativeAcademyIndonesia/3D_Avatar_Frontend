@@ -8,6 +8,8 @@ import { Dashboard } from "./page/dashboard";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { useChat } from "./hooks/useChat";
 import Swal from 'sweetalert2';
+import { Register } from "./page/register";
+import { ResetPassword } from "./page/ResetPassword";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useChat();
@@ -20,6 +22,12 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={
+          <ProtectedRoute>
+            <ResetPassword />
+          </ProtectedRoute>
+        } />
         <Route
           path="/"
           element={

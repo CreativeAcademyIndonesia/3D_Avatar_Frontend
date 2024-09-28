@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { marked } from 'marked';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlassPlus, faMagnifyingGlassMinus, faEraser, faMicrophone, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlassPlus, faMagnifyingGlassMinus, faEraser, faMicrophone, faRightFromBracket, faGear } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
 
 export const UI = ({ hidden, ...props }) => {
@@ -126,6 +126,12 @@ export const UI = ({ hidden, ...props }) => {
                 Dashboard
               </button>
             )}
+            <a
+              href="/reset-password"
+              className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
+            >
+              <FontAwesomeIcon icon={faGear} />
+            </a>
             <button
               onClick={logout}
               className="pointer-events-auto bg-[#4651CE] hover:bg-[#3640ac] text-white p-3 rounded-xl"
