@@ -1,307 +1,299 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import excel from '../assets/images/excel.png';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
+import { UserIcon, ChatBubbleLeftRightIcon, CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useChat } from '../hooks/useChat';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const backendUrl = import.meta.env.VITE_GCC_NODE_SERVER;
 
+const ITEMS_PER_PAGE = 5;
+
 export function Dashboard() {
-  const [chatHistory, setChatHistory] = useState([]);
+  const [dashboardData, setDashboardData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modalData, setModalData] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false); 
-  const [month, setMonth] = useState(new Date().getMonth() + 1); // Bulan 1-12
+  const [currentPage, setCurrentPage] = useState(1);
+  const { token, handleLogout, role } = useChat();
   const navigate = useNavigate();
-  const { nama } = useChat();
-  
-  const fetchChatHistory = async () => {
-    try {
-      const response = await fetch(`${backendUrl}avatar/chat/history?month=${month}`);
-      if (!response.ok) {
-        throw new Error('Gagal mengambil data chat history');
-      }
-      const data = await response.json();
-      setChatHistory(data.data);
-      // Swal.fire({
-      //   icon: 'success',
-      //   title: 'Success!',
-      //   text: 'Chat history fetched successfully!',
-      // });
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Fetch Failed!',
-        text: error.message,
-        showCloseButton: false,
-        showConfirmButton: false,
-      });
-      console.error('Error fetching chat history:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const location = useLocation();
 
-  const deleteChatHistory = async (session) => {
-    try {
-      const response = await fetch(`${backendUrl}avatar/chat/history`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ session }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Gagal menghapus riwayat chat');
-      }
-  
-      const result = await response.json();
-      Swal.fire({
-        icon: 'success',
-        title: 'Deleted!',
-        text: 'Chat history has been successfully deleted.',
-      });
-  
-      // Fetch the updated chat history after deletion
-      await fetchChatHistory();
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Delete Failed!',
-        text: error.message,
-        showCloseButton: false,
-        showConfirmButton: false,
-      });
-      console.error('Error deleting chat history:', error);
-    }
-  };
-  
   useEffect(() => {
-    // Pengecekan jika nama bukan 'adminsupport', maka navigate ke '/'
-    if (nama !== 'adminsupport') {
+    // Redirect jika bukan admin
+    if (role !== 'admin') {
       navigate('/');
-      return; // Jangan lanjutkan ke fetch data jika sudah navigate
-    }
-  
-    // Jika nama adalah 'adminsupport', fetch data
-    fetchChatHistory();
-  }, [month, nama, navigate]);
-
-  const fetchChatDetails = async (session) => {
-    try {
-      const response = await fetch(`${backendUrl}avatar/chat/history-details?session=${session}`);
-      if (!response.ok) {
-        throw new Error('Gagal mengambil detail chat');
-      }
-      const data = await response.json();
-      setModalData(data.data);
-      setShowModal(true);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Fetch Failed!',
-        text: error.message,
-        showCloseButton: false,
-        showConfirmButton: false,
-      });
-    }
-  };
-
-  const fetchAnalytics = async (nama, session) => {
-    setAnalyticsLoading(true);
-    try {
-      const response = await fetch(`${backendUrl}avatar/chat/analisa`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ nama, session }),
-      });
-      if (!response.ok) {
-        throw new Error('Gagal mengambil data analisis');
-      }
-      const data = await response.json();
-      console.log('Analisis Data:', data);
-      await fetchChatHistory();
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Analytics fetched successfully!',
-      });
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Fetch Failed!',
-        text: error.message,
-        showCloseButton: false,
-        showConfirmButton: false,
-      });
-    } finally {
-      setAnalyticsLoading(false);
-    }
-  };
-
-  const downloadExcel = (data, fileName) => {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const file = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(file, `${fileName}.xlsx`);
-  };
-
-  const handleMonthChange = async (event) => {
-      const selectedMonth = event.target.value.split('-')[1];
-      setMonth(selectedMonth);
-      // setLoading(true);
-      // await fetchChatHistory();
-  };
-
-  const handleDownload = () => {
-    if (chatHistory.length === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'No Data',
-        text: 'There is no chat history to download.',
-      });
       return;
     }
-    downloadExcel(chatHistory, 'ChatHistory');
+
+    fetchDashboardData();
+  }, [token, role, navigate]);
+
+  const fetchDashboardData = async () => {
+    try {
+      const authToken = token || localStorage.getItem('authToken');
+      
+      if (!authToken) {
+        throw new Error('Token tidak ditemukan');
+      }
+
+      const response = await fetch(`${backendUrl}avatar/chat/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 403) {
+          navigate('/');
+          throw new Error('Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
+        throw new Error('Gagal mengambil data dashboard');
+      }
+
+      const data = await response.json();
+      setDashboardData(data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Fetch Failed!',
+        text: error.message,
+        showCloseButton: false,
+        showConfirmButton: false,
+      });
+    }
   };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(dashboardData.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentData = dashboardData.slice(startIndex, endIndex);
+
+  const navigation = [
+    { name: 'Avatar AI', path: '/' },
+    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Manajemen User', path: '/dashboard/users' }
+  ];
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex justify-center items-center p-4 pointer-events-none">
-      <div className="bg-white bg-opacity-80 p-4 rounded-xl border-2 border-[#4651CE] w-full max-w-4xl max-h-screen overflow-auto pointer-events-auto">
-        <div className='mb-2 pb-1 border-b border-[#4651CE]'>
-          <div className='flex items-center justify-between w-full'>
-            <div className='flex gap-2 items-center'>
-              <h1 className="font-semibold text-2xl text-[#4651CE]">Analisa Chat</h1>
-              <input type="month" className='bg-transparent'   value={`${new Date().getFullYear()}-${month.toString().padStart(2, '0')}`} onChange={handleMonthChange}  />
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex space-x-8">
+              {navigation.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium ${
+                    location.pathname === item.path
+                      ? 'border-indigo-600 text-indigo-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              ))}
             </div>
-            <button className='px-4 py-2 rounded-xl text-white' onClick={handleDownload}>
-              <img src={excel} alt="Download Excel" className='w-6' />
-            </button>
+            <div className="flex items-center">
+              <button
+                onClick={handleLogout}
+                className="ml-4 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Logout
+              </button>
+            </div>
           </div>
-          <p className='text-sm text-gray-600'>AUC = Area Under the Receiver Operating Characteristic Curve; the area measures discrimination, that is, the ability of the test to correctly classify those with and without the risk. [90-1.0 = Excellent; 80-.90 = Good; .70-.80 = Fair; .60-.70 = Poor]</p>
         </div>
-        <table className="min-w-full">
-          <thead>
-            <tr className='text-[#4651CE]'>
-              <th className='px-2 py-1 whitespace-nowrap'>ID</th>
-              <th className='px-2 py-1 whitespace-nowrap'>Nama</th>
-              <th className='px-2 py-1 whitespace-nowrap'>Session</th>
-              <th className='px-2 py-1 whitespace-nowrap'>AI Sensitivity</th>
-              <th className='px-2 py-1 whitespace-nowrap'>AI Specificity</th>
-              <th className='px-2 py-1 whitespace-nowrap'>AI PPV</th>
-              <th className='px-2 py-1 whitespace-nowrap'>AI AUC</th>
-              <th className='px-2 py-1 whitespace-nowrap'>UC Sensitivity</th>
-              <th className='px-2 py-1 whitespace-nowrap'>UC Specificity</th>
-              <th className='px-2 py-1 whitespace-nowrap'>UC PPV</th>
-              <th className='px-2 py-1 whitespace-nowrap'>UC AUC</th>
-              <th className='px-2 py-1 whitespace-nowrap'>Score</th>
-              <th className='px-2 py-1 whitespace-nowrap'>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {chatHistory.map(item => (
-              <tr key={item.id}>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.id}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.nama}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.session}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.ai_sensitivity !== null ? item.ai_sensitivity : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.ai_spesificity !== null ? item.ai_spesificity : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.ai_ppv !== null ? item.ai_ppv : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.ai_auc !== null ? item.ai_auc : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.uc_sensitivity !== null ? item.uc_sensitivity : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.uc_spesificity !== null ? item.uc_spesificity : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.uc_ppv !== null ? item.uc_ppv : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.uc_auc !== null ? item.uc_auc : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>{item.score !== null ? item.score : 'N/A'}</td>
-                <td className='px-2 py-1 whitespace-nowrap'>
-                  <div className='flex gap-2'>
-                    <button onClick={() => fetchChatDetails(item.session)} className="bg-[#4651CE] px-4 py-2 rounded-xl text-white">Details</button>
-                    <button 
-                      onClick={() => fetchAnalytics(item.nama, item.session)} 
-                      className={`px-4 py-2 rounded-xl text-white ${analyticsLoading ? 'bg-gray-400' : 'bg-yellow-500'}`}
-                      disabled={analyticsLoading} 
-                    >
-                      {analyticsLoading ? 'Loading...' : 'Analytics'}
-                    </button>
-                    <button 
-                      onClick={() => deleteChatHistory(item.session)} 
-                      className="bg-red-500 px-4 py-2 rounded-xl text-white"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-  
-      {showModal && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 pointer-events-auto">
-        <div className="bg-white p-4 rounded-xl max-w-xl max-h-[80vh] overflow-auto">
-          <h2 className="text-xl mb-4">Detail Chat</h2>
-          <ul>
-            {modalData.map(detail => (
-              <li key={detail.id} className="mb-2">
-                <strong>Human:</strong> {detail.human_message}<br />
-                <strong>AI:</strong> {detail.ai_message}<br />
-                <small>{new Date(detail.created_at).toLocaleString()}</small>
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => setShowModal(false)} className="mt-4 bg-[#4651CE] text-white px-4 p-2 rounded-xl">Close</button>
+      </nav>
+
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white overflow-hidden shadow-lg rounded-lg">
+            <div className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-indigo-100 rounded-md p-3">
+                  <UserIcon className="h-8 w-8 text-indigo-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Total Pengguna</p>
+                  <p className="text-2xl font-semibold text-gray-900">{dashboardData.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white overflow-hidden shadow-lg rounded-lg">
+            <div className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-indigo-100 rounded-md p-3">
+                  <ChatBubbleLeftRightIcon className="h-8 w-8 text-indigo-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Total Chat</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {dashboardData.reduce((sum, user) => sum + user.total_chat, 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow-lg rounded-lg">
+            <div className="p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0 bg-indigo-100 rounded-md p-3">
+                  <CalendarIcon className="h-8 w-8 text-indigo-600" />
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Aktivitas Terakhir</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {dashboardData.length > 0
+                      ? formatDate(Math.max(...dashboardData.map(user => new Date(user.last_chat))))
+                      : 'Tidak ada aktivitas'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    )}
+
+        {/* Table */}
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Data Aktivitas Pengguna</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nama Pengguna
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Chat
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Chat Pertama
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Chat Terakhir
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentData.map((user, index) => (
+                  <tr key={index} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => navigate(`/dashboard/detail/${user.nama}`)}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <span className="text-indigo-600 font-medium">{user.nama[0].toUpperCase()}</span>
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{user.nama}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{user.total_chat}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{formatDate(user.first_chat)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{formatDate(user.last_chat)}</div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
+                  <span className="font-medium">{Math.min(endIndex, dashboardData.length)}</span> of{' '}
+                  <span className="font-medium">{dashboardData.length}</span> results
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <ChevronLeftIcon className="h-5 w-5" />
+                  </button>
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i + 1}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                        currentPage === i + 1
+                          ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <ChevronRightIcon className="h-5 w-5" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
 
-
-
-// <form onSubmit={handleSubmit}>
-// <div className="mb-4">
-//   <label htmlFor="nama" className="block mb-2 text-slate-800">Nama</label>
-//   <input
-//     type="text"
-//     id="nama"
-//     value={nama}
-//     onChange={(e) => setNama(e.target.value)}
-//     className="w-full placeholder:text-slate-800 placeholder:italic p-4 bg-opacity-30 bg-white backdrop-blur-md rounded-2xl outline-2 outline-offset-1 focus:outline focus:outline-[#4651CE]"
-//     placeholder='Masukan Nama Anda'
-//     required
-//   />
-// </div>
-// <div className="mb-4">
-//   <label htmlFor="password" className="block mb-2 text-slate-800">Access Key:</label>
-//   <input
-//     type="password"
-//     id="password"
-//     value={password}
-//     onChange={(e) => setPassword(e.target.value)}
-//     className="w-full placeholder:text-slate-800 placeholder:italic p-4 bg-opacity-30 bg-white backdrop-blur-md rounded-2xl outline-2 outline-offset-1 focus:outline focus:outline-[#4651CE]"
-//     placeholder='Masukan Password'
-//     required
-//   />
-// </div>
-// <button 
-//   type="submit" 
-//   className="bg-[#4651CE] hover:bg-[#4651CE] text-white p-4 px-10 font-semibold uppercase rounded-2xl w-full"
-// >
-//   Masuk
-// </button>
-// </form>

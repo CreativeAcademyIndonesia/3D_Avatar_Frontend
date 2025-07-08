@@ -14,17 +14,66 @@ export const ChatProvider = ({ children }) => {
   const [cameraZoomed, setCameraZoomed] = useState(true);
   const [sessionId, setSessionId] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('authToken') || null);
-  const [nama, setNama] = useState(localStorage.getItem('nama') || null); // Ambil nama dari localStorage
+  const [nama, setNama] = useState(localStorage.getItem('nama') || null);
+  const [role, setRole] = useState(localStorage.getItem('role') || null);
   const [isAuthenticated, setIsAuthenticated] = useState(!!token);
+  const [error, setError] = useState('');
+  const [audioInstance, setAudioInstance] = useState(null);
+
+  // Effect untuk memperbarui state dari localStorage saat refresh
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken');
+    const storedNama = localStorage.getItem('nama');
+    const storedRole = localStorage.getItem('role');
+    
+    if (storedToken) {
+      setToken(storedToken);
+      setIsAuthenticated(true);
+    }
+    
+    if (storedNama) {
+      setNama(storedNama);
+    }
+
+    if (storedRole) {
+      setRole(storedRole);
+    }
+  }, []);
+
+  // Effect untuk menyimpan nama ke localStorage saat berubah
+  useEffect(() => {
+    if (nama) {
+      localStorage.setItem('nama', nama);
+    }
+  }, [nama]);
+
+  // Effect untuk menyimpan role ke localStorage saat berubah
+  useEffect(() => {
+    if (role) {
+      localStorage.setItem('role', role);
+    }
+  }, [role]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('nama');
+    localStorage.removeItem('role');
+    setToken(null);
+    setNama(null);
+    setRole(null);
+    setIsAuthenticated(false);
+    setError('Sesi Anda telah berakhir. Silakan login kembali.');
+  };
 
   const chat = async (message) => {
     setLoading(true);
+    setError('');
     try {
       const data = await fetch(`${backendUrl}avatar/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization" : `Bearer ${token}` // Perbaiki typo dari 'Bareer' ke 'Bearer'
+          "Authorization" : `Bearer ${token}`
         },
         body: JSON.stringify({
           "question": message,
@@ -32,26 +81,31 @@ export const ChatProvider = ({ children }) => {
           "nama" : nama
         }),
       });
-      const response = await data.json();
-      console.log(response)
 
+      if (data.status === 403) {
+        handleLogout();
+        return;
+      }
+
+      const response = await data.json();
+      console.dir(response, { depth: null });
       if(response.messages){
         const rawMessages = response.text;
         setRawMessages(rawMessages);
-        const resp = response.messages;
-        setMessages((messages) => [...messages, ...resp]);
+        
+        // Process messages to ensure they have default values
+        const processedMessages = response.messages.map(msg => ({
+          ...msg,
+          animation: msg.animation || "idle_three",
+          facialExpression: msg.facialExpression || "default"
+        }));
+        
+        setMessages((prevMessages) => [...prevMessages, ...processedMessages]);
         if (response.session) setSessionId(response.session);
       }
-      setLoading(false);
     } catch (error) {
       console.error("Terjadi kesalahan:", error);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: error.message,
-        showCloseButton: false,
-        showConfirmButton: false,
-      });
+      setError(error.message || 'Terjadi kesalahan saat memproses permintaan');
     } finally {
       setLoading(false);
     }
@@ -62,24 +116,43 @@ export const ChatProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (token) {
-      console.log(token)
-      setIsAuthenticated(true);
-    }
-
     if (messages.length > 0) {
-      setMessage(messages[0]);
+      const currentMessage = messages[0];
+      
+      // Buat dan mainkan audio jika ada
+      if (currentMessage.audio) {
+        // Hentikan audio sebelumnya jika masih ada
+        if (audioInstance) {
+          audioInstance.pause();
+          audioInstance.currentTime = 0;
+        }
+        
+        const audio = new Audio("data:audio/mp3;base64," + currentMessage.audio);
+        setAudioInstance(audio);
+        
+        audio.onended = () => {
+          onMessagePlayed();
+          setAudioInstance(null);
+        };
+        
+        audio.play();
+      }
+      
+      setMessage({
+        ...currentMessage,
+        animation: currentMessage.animation || "idle_three",
+        facialExpression: currentMessage.facialExpression || "default"
+      });
     } else {
       setMessage(null);
+      // Bersihkan audio yang sedang berjalan
+      if (audioInstance) {
+        audioInstance.pause();
+        audioInstance.currentTime = 0;
+        setAudioInstance(null);
+      }
     }
-  }, [messages, token]);
-
-  // Simpan nama ke localStorage saat berubah
-  useEffect(() => {
-    if (nama) {
-      localStorage.setItem('nama', nama);
-    }
-  }, [nama]);
+  }, [messages]);
 
   return (
     <ChatContext.Provider
@@ -95,10 +168,16 @@ export const ChatProvider = ({ children }) => {
         rawMessages, 
         nama,
         setNama,
+        role,
+        setRole,
         setToken,
         token,
         isAuthenticated,
         setIsAuthenticated,
+        handleLogout,
+        error,
+        setError,
+        audioInstance
       }}
     >
       {children}

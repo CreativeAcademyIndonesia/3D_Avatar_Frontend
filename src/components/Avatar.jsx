@@ -13,84 +13,187 @@ import { useChat } from "../hooks/useChat";
 
 const facialExpressions = {
   default: {},
+  
+  // Ekspresi senyum yang lebih natural
   smile: {
-    browInnerUp: 0.17,
-    eyeSquintLeft: 0.4,
-    eyeSquintRight: 0.44,
-    noseSneerLeft: 0.1700000727403593,
-    noseSneerRight: 0.14000002836874015,
-    mouthPressLeft: 0.61,
-    mouthPressRight: 0.41000000000000003,
+    browInnerUp: 0.1,
+    eyeSquintLeft: 0.25,
+    eyeSquintRight: 0.25,
+    noseSneerLeft: 0.08,
+    noseSneerRight: 0.08,
+    mouthPressLeft: 0.3,
+    mouthPressRight: 0.3,
+    mouthSmileLeft: 0.4,
+    mouthSmileRight: 0.4,
+    mouthDimpleLeft: 0.2,
+    mouthDimpleRight: 0.2,
+    cheekSquintLeft: 0.15,
+    cheekSquintRight: 0.15,
   },
+  
+  // Ekspresi lucu yang lebih ekspresif
   funnyFace: {
-    jawLeft: 0.63,
-    mouthPucker: 0.53,
-    noseSneerLeft: 1,
-    noseSneerRight: 0.39,
-    mouthLeft: 1,
-    eyeLookUpLeft: 1,
-    eyeLookUpRight: 1,
-    cheekPuff: 0.9999924982764238,
-    mouthDimpleLeft: 0.414743888682652,
-    mouthRollLower: 0.32,
-    mouthSmileLeft: 0.35499733688813034,
-    mouthSmileRight: 0.35499733688813034,
+    jawLeft: 0.5,
+    mouthPucker: 0.4,
+    noseSneerLeft: 0.8,
+    noseSneerRight: 0.3,
+    mouthLeft: 0.8,
+    cheekPuff: 0.7,
+    mouthDimpleLeft: 0.5,
+    mouthRollLower: 0.25,
+    mouthSmileLeft: 0.4,
+    mouthSmileRight: 0.4,
+    eyeWideLeft: 0.3,
+    eyeWideRight: 0.3,
   },
+  
+  // Ekspresi sedih yang lebih halus
   sad: {
-    mouthFrownLeft: 1,
-    mouthFrownRight: 1,
-    mouthShrugLower: 0.78341,
-    browInnerUp: 0.452,
-    eyeSquintLeft: 0.72,
-    eyeSquintRight: 0.75,
-    eyeLookDownLeft: 0.5,
-    eyeLookDownRight: 0.5,
-    jawForward: 1,
+    mouthFrownLeft: 0.8,
+    mouthFrownRight: 0.8,
+    mouthShrugLower: 0.6,
+    browInnerUp: 0.4,
+    eyeSquintLeft: 0.6,
+    eyeSquintRight: 0.65,
+    eyeLookDownLeft: 0.4,
+    eyeLookDownRight: 0.4,
+    jawForward: 0.8,
+    browDownLeft: 0.3,
+    browDownRight: 0.3,
   },
+  
+  // Ekspresi terkejut yang lebih realistis
   surprised: {
-    eyeWideLeft: 0.5,
-    eyeWideRight: 0.5,
-    jawOpen: 0.351,
-    mouthFunnel: 1,
-    browInnerUp: 1,
-  },
-  angry: {
-    browDownLeft: 1,
-    browDownRight: 1,
-    eyeSquintLeft: 1,
-    eyeSquintRight: 1,
-    jawForward: 1,
-    jawLeft: 1,
-    mouthShrugLower: 1,
-    noseSneerLeft: 1,
-    noseSneerRight: 0.42,
-    eyeLookDownLeft: 0.16,
-    eyeLookDownRight: 0.16,
-    cheekSquintLeft: 1,
-    cheekSquintRight: 1,
-    mouthClose: 0.23,
-    mouthFunnel: 0.63,
-    mouthDimpleRight: 1,
-  },
-  crazy: {
+    eyeWideLeft: 0.4,
+    eyeWideRight: 0.4,
+    jawOpen: 0.3,
+    mouthFunnel: 0.8,
     browInnerUp: 0.9,
-    jawForward: 1,
-    noseSneerLeft: 0.5700000000000001,
-    noseSneerRight: 0.51,
-    eyeLookDownLeft: 0.39435766259644545,
-    eyeLookUpRight: 0.4039761421719682,
-    eyeLookInLeft: 0.9618479575523053,
-    eyeLookInRight: 0.9618479575523053,
-    jawOpen: 0.9618479575523053,
-    mouthDimpleLeft: 0.9618479575523053,
-    mouthDimpleRight: 0.9618479575523053,
-    mouthStretchLeft: 0.27893590769016857,
-    mouthStretchRight: 0.2885543872656917,
-    mouthSmileLeft: 0.5578718153803371,
-    mouthSmileRight: 0.38473918302092225,
-    tongueOut: 0.9618479575523053,
+    browOuterUpLeft: 0.6,
+    browOuterUpRight: 0.6,
+    mouthStretchLeft: 0.2,
+    mouthStretchRight: 0.2,
+  },
+  
+  // Ekspresi marah yang lebih natural dan halus
+  angry: {
+    browDownLeft: 0.6,
+    browDownRight: 0.6,
+    browInnerDown: 0.4,
+    eyeSquintLeft: 0.5,
+    eyeSquintRight: 0.5,
+    eyeLookDownLeft: 0.3,
+    eyeLookDownRight: 0.3,
+    jawForward: 0.4,
+    jawLeft: 0.3,
+    mouthShrugLower: 0.6,
+    mouthShrugUpper: 0.3,
+    mouthFrownLeft: 0.5,
+    mouthFrownRight: 0.5,
+    noseSneerLeft: 0.4,
+    noseSneerRight: 0.4,
+    cheekSquintLeft: 0.3,
+    cheekSquintRight: 0.3,
+  },
+
+  happy: {
+    browInnerUp: 0.5,
+    browOuterUpLeft: 0.3,
+    browOuterUpRight: 0.3,
+    eyeSquintLeft: 0.4,
+    eyeSquintRight: 0.4,
+    mouthSmileLeft: 0.2,
+    mouthSmileRight: 0.2,
+    jawOpen: 0.1,
+    noseSneerLeft: 0.1,
+    noseSneerRight: 0.1,
+  },
+  
+  // Ekspresi baru: Bingung
+  confused: {
+    browInnerUp: 0.6,
+    browOuterUpLeft: 0.4,
+    browOuterUpRight: 0.4,
+    eyeLookUpLeft: 0.3,
+    eyeLookUpRight: 0.3,
+    mouthFrownLeft: 0.3,
+    mouthFrownRight: 0.3,
+    jawForward: 0.2,
+    noseSneerLeft: 0.2,
+    noseSneerRight: 0.2,
+  },
+  
+  // Ekspresi baru: Takut
+  scared: {
+    browInnerUp: 0.8,
+    browOuterUpLeft: 0.7,
+    browOuterUpRight: 0.7,
+    eyeWideLeft: 0.6,
+    eyeWideRight: 0.6,
+    mouthFrownLeft: 0.5,
+    mouthFrownRight: 0.5,
+    jawOpen: 0.2,
+    mouthShrugLower: 0.4,
+    eyeLookDownLeft: 0.3,
+    eyeLookDownRight: 0.3,
+  },
+  
+  // Ekspresi baru: Bangga
+  proud: {
+    browInnerUp: 0.3,
+    browOuterUpLeft: 0.5,
+    browOuterUpRight: 0.5,
+    mouthSmileLeft: 0.5,
+    mouthSmileRight: 0.5,
+    jawForward: 0.3,
+    chinRaise: 0.4,
+    eyeLookUpLeft: 0.2,
+    eyeLookUpRight: 0.2,
+  },
+  
+  // Ekspresi baru: Malu
+  shy: {
+    browInnerUp: 0.4,
+    eyeLookDownLeft: 0.6,
+    eyeLookDownRight: 0.6,
+    mouthSmileLeft: 0.3,
+    mouthSmileRight: 0.3,
+    mouthDimpleLeft: 0.2,
+    mouthDimpleRight: 0.2,
+    jawForward: 0.1,
+    cheekSquintLeft: 0.1,
+    cheekSquintRight: 0.1,
+  },
+  
+  // Ekspresi baru: Lelah
+  tired: {
+    browInnerUp: 0.2,
+    eyeSquintLeft: 0.7,
+    eyeSquintRight: 0.7,
+    eyeLookDownLeft: 0.4,
+    eyeLookDownRight: 0.4,
+    mouthFrownLeft: 0.3,
+    mouthFrownRight: 0.3,
+    jawForward: 0.2,
+    browDownLeft: 0.3,
+    browDownRight: 0.3,
+  },
+  
+  // Ekspresi baru: Penasaran
+  curious: {
+    browInnerUp: 0.5,
+    browOuterUpLeft: 0.3,
+    browOuterUpRight: 0.3,
+    eyeLookUpLeft: 0.4,
+    eyeLookUpRight: 0.4,
+    mouthSmileLeft: 0.2,
+    mouthSmileRight: 0.2,
+    jawOpen: 0.1,
+    noseSneerLeft: 0.1,
+    noseSneerRight: 0.1,
   },
 };
+
 
 const corresponding = {
   A: "viseme_PP",
@@ -107,45 +210,105 @@ const corresponding = {
 let setupMode = false;
 
 export function Avatar(props) {
-  const { nodes, materials, scene } = useGLTF(
-    // "/models/64f1a714fe61576b46f27ca2.glb"
-    "/models/66d6c1a81397d69042391d81_new.glb"
-    
-  );
-
-  const { message, onMessagePlayed, chat } = useChat();
-
+  const { nodes, materials, scene } = useGLTF("/models/hijabavatar.glb");
+  const { animations } = useGLTF("/models/animation2.glb");
+  const { message, onMessagePlayed, audioInstance } = useChat();
+  
+  // Initialize all state variables at the top
   const [lipsync, setLipsync] = useState();
-
-  useEffect(() => {
-    console.log(message);
-    if (!message) {
-      setAnimation("Idle");
-      return;
-    }
-    setAnimation(message.animation);
-    setFacialExpression(message.facialExpression);
-    setLipsync(message.lipsync);
-    const audio = new Audio("data:audio/mp3;base64," + message.audio);
-    audio.play();
-    setAudio(audio);
-    audio.onended = onMessagePlayed;
-  }, [message]);
-
-  const { animations } = useGLTF("/models/animations.glb");
+  const [blink, setBlink] = useState(false);
+  const [winkLeft, setWinkLeft] = useState(false);
+  const [winkRight, setWinkRight] = useState(false);
+  const [facialExpression, setFacialExpression] = useState("");
+  const [animation, setAnimation] = useState(
+    animations.find((a) => a.name === "idle_three") ? "idle_three" : animations[0].name
+  );
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
-  const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "Idle") ? "Idle" : animations[0].name // Check if Idle animation exists otherwise use first animation
-  );
+
+  // Animation effect
   useEffect(() => {
-    actions[animation]
-      .reset()
+    if (!actions || !actions[animation]) {
+      console.warn(`Animation "${animation}" not found`);
+      return;
+    }
+    
+    const action = actions[animation];
+    action.reset()
       .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
       .play();
-    return () => actions[animation].fadeOut(0.5);
-  }, [animation]);
+
+    const isIdleAnimation = ["idle_three", "idle_one", "idle_two"].includes(animation);
+    action.clampWhenFinished = true;
+    action.loop = isIdleAnimation ? THREE.LoopOnce : THREE.LoopOnce;
+    
+    const onFinished = (e) => {
+      if (!isIdleAnimation) {
+        setAnimation("idle_three");
+        setFacialExpression("");
+        return;
+      }
+      
+      let nextAnimation;
+      switch(animation) {
+        case "idle_three":
+          nextAnimation = "idle_one";
+          break;
+        case "idle_one":
+          nextAnimation = "idle_two";
+          break;
+        case "idle_two":
+          nextAnimation = "idle_three";
+          break;
+        default:
+          nextAnimation = "idle_three";
+      }
+      setAnimation(nextAnimation);
+    };
+
+    mixer.addEventListener('finished', onFinished);
+    
+    return () => {
+      mixer.removeEventListener('finished', onFinished);
+      action.fadeOut(0.5);
+    };
+  }, [animation, actions, mixer]);
+
+  // Message effect
+  useEffect(() => {
+    if (!message) {
+      setAnimation("idle_three");
+      setFacialExpression("");
+      return;
+    }
+    
+    if (message.animation) {
+      setAnimation(message.animation);
+    }
+    if (message.facialExpression) {
+      setFacialExpression(message.facialExpression);
+    }
+    if (message.lipsync) {
+      setLipsync(message.lipsync);
+    }
+  }, [message]);
+
+  // Blink effect
+  useEffect(() => {
+    let blinkTimeout;
+    const nextBlink = () => {
+      blinkTimeout = setTimeout(() => {
+        setBlink(true);
+        setTimeout(() => {
+          setBlink(false);
+          nextBlink();
+        }, 200);
+      }, THREE.MathUtils.randInt(1000, 5000));
+    };
+    nextBlink();
+    return () => clearTimeout(blinkTimeout);
+  }, []);
 
   const lerpMorphTarget = (target, value, speed = 0.1) => {
     scene.traverse((child) => {
@@ -174,12 +337,6 @@ export function Avatar(props) {
     });
   };
 
-  const [blink, setBlink] = useState(false);
-  const [winkLeft, setWinkLeft] = useState(false);
-  const [winkRight, setWinkRight] = useState(false);
-  const [facialExpression, setFacialExpression] = useState("");
-  const [audio, setAudio] = useState();
-
   useFrame(() => {
     !setupMode &&
       Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
@@ -203,8 +360,8 @@ export function Avatar(props) {
     }
 
     const appliedMorphTargets = [];
-    if (message && lipsync) {
-      const currentAudioTime = audio.currentTime;
+    if (message && lipsync && audioInstance) {
+      const currentAudioTime = audioInstance.currentTime;
       for (let i = 0; i < lipsync.mouthCues.length; i++) {
         const mouthCue = lipsync.mouthCues[i];
         if (
@@ -292,54 +449,9 @@ export function Avatar(props) {
     )
   );
 
-  useEffect(() => {
-    let blinkTimeout;
-    const nextBlink = () => {
-      blinkTimeout = setTimeout(() => {
-        setBlink(true);
-        setTimeout(() => {
-          setBlink(false);
-          nextBlink();
-        }, 200);
-      }, THREE.MathUtils.randInt(1000, 5000));
-    };
-    nextBlink();
-    return () => clearTimeout(blinkTimeout);
-  }, []);
-
   return (
-    <group {...props} dispose={null} ref={group}>
+     <group {...props} dispose={null} ref={group}>
       <primitive object={nodes.Hips} />
-      <skinnedMesh
-        name="Wolf3D_Body"
-        geometry={nodes.Wolf3D_Body.geometry}
-        material={materials.Wolf3D_Body}
-        skeleton={nodes.Wolf3D_Body.skeleton}
-      />
-      <skinnedMesh
-        name="Wolf3D_Outfit_Bottom"
-        geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
-        material={materials.Wolf3D_Outfit_Bottom}
-        skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton}
-      />
-      <skinnedMesh
-        name="Wolf3D_Outfit_Footwear"
-        geometry={nodes.Wolf3D_Outfit_Footwear.geometry}
-        material={materials.Wolf3D_Outfit_Footwear}
-        skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
-      />
-      <skinnedMesh
-        name="Wolf3D_Outfit_Top"
-        geometry={nodes.Wolf3D_Outfit_Top.geometry}
-        material={materials.Wolf3D_Outfit_Top}
-        skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
-      />
-      <skinnedMesh
-        name="Wolf3D_Hair"
-        geometry={nodes.Wolf3D_Hair.geometry}
-        material={materials.Wolf3D_Hair}
-        skeleton={nodes.Wolf3D_Hair.skeleton}
-      />
       <skinnedMesh
         name="EyeLeft"
         geometry={nodes.EyeLeft.geometry}
@@ -372,11 +484,37 @@ export function Avatar(props) {
         morphTargetDictionary={nodes.Wolf3D_Teeth.morphTargetDictionary}
         morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences}
       />
+      <skinnedMesh
+        geometry={nodes.Wolf3D_Headwear.geometry}
+        material={materials.Wolf3D_Headwear}
+        skeleton={nodes.Wolf3D_Headwear.skeleton}
+      />
+      <skinnedMesh
+        geometry={nodes.Wolf3D_Outfit_Top.geometry}
+        material={materials.Wolf3D_Outfit_Top}
+        skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
+      />
+      <skinnedMesh
+        geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
+        material={materials.Wolf3D_Outfit_Bottom}
+        skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton}
+      />
+      <skinnedMesh
+        geometry={nodes.Wolf3D_Outfit_Footwear.geometry}
+        material={materials.Wolf3D_Outfit_Footwear}
+        skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
+      />
+      <skinnedMesh
+        geometry={nodes.Wolf3D_Body.geometry}
+        material={materials.Wolf3D_Body}
+        skeleton={nodes.Wolf3D_Body.skeleton}
+      />
     </group>
   );
 }
 
 // useGLTF.preload("/models/gisca2.glb");
 // useGLTF.preload("/models/64f1a714fe61576b46f27ca2.glb");
-useGLTF.preload("/models/66d6c1a81397d69042391d81_new.glb");
-useGLTF.preload("/models/animations.glb");
+useGLTF.preload("/models/hijabavatar.glb");
+// useGLTF.preload("/models/66d6c1a81397d69042391d81_new.glb");
+useGLTF.preload("/models/animation2.glb");

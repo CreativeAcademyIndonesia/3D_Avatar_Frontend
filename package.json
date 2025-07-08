@@ -14,11 +14,15 @@
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "latest",
+    "@heroicons/react": "^2.2.0",
+    "@heroui/react": "^2.7.11",
+    "@heroui/table": "^2.2.21",
     "@react-three/drei": "9.75.0",
     "@react-three/fiber": "8.13.3",
     "@react-three/xr": "^5.7.1",
     "@types/three": "0.152.1",
     "file-saver": "^2.0.5",
+    "framer-motion": "^12.23.0",
     "leva": "^0.9.35",
     "marked": "^14.1.0",
     "react": "^18.2.0",
@@ -30,6 +34,7 @@
     "yarn": "^1.22.22"
   },
   "devDependencies": {
+    "@jridgewell/gen-mapping": "^0.3.12",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^3.1.0",

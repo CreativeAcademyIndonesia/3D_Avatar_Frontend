@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChat } from '../hooks/useChat';
+import { LockClosedIcon } from '@heroicons/react/24/solid';
+import backgroundLogin from '../assets/images/student-holding-books.jpg';
 const backendUrl = import.meta.env.VITE_GCC_NODE_SERVER;
 
 export function ResetPassword() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { token, nama } = useChat(); // Ambil token dari konteks
+  const { token, nama } = useChat();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -14,10 +16,10 @@ export function ResetPassword() {
     setError('');
     try {
       const response = await fetch(`${backendUrl}avatar/chat/update-users`, {
-        method: 'PUT', // Gunakan PUT untuk pembaruan
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Tambahkan header Authorization
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ password, nama }),
       });
@@ -29,7 +31,7 @@ export function ResetPassword() {
 
       const data = await response.json();
       console.log(data);
-      navigate('/'); // Navigasi ke halaman utama setelah berhasil update
+      navigate('/');
     } catch (error) {
       console.error('Terjadi kesalahan saat update password:', error);
       setError(error.message || 'Terjadi kesalahan saat update password');
@@ -37,31 +39,91 @@ export function ResetPassword() {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-center items-center p-4 pointer-events-none">
-      <div className="backdrop-blur-md bg-white bg-opacity-50 p-8 rounded-xl border-2 border-[#4651CE] w-full max-w-md pointer-events-auto">
-        <h1 className="font-semibold text-2xl text-[#4651CE] mb-6">Update Password</h1>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="password" className="block mb-2 text-slate-800">Password Baru:</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full placeholder:text-slate-800 placeholder:italic p-4 bg-opacity-30 bg-white backdrop-blur-md rounded-2xl outline-2 outline-offset-1 focus:outline focus:outline-[#4651CE]"
-              placeholder='Masukan Password Baru'
-              required
-            />
+    <div className="min-h-screen flex">
+      {/* Left side - Image */}
+      <div className="hidden lg:block lg:w-3/5">
+        <div 
+          className="h-full w-full bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${backgroundLogin})`,
+            height: '100vh'
+          }}
+        >
+          <div className="h-full w-full bg-black bg-opacity-20 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-5xl font-bold text-white mb-4">Avatar Lecturer</h1>
+              <p className="text-2xl text-white">Update Password Anda</p>
+            </div>
           </div>
-          <button
-            type="submit"
-            className="bg-[#4651CE] hover:bg-[#4651CE] text-white p-4 px-10 font-semibold uppercase rounded-2xl w-full"
-          >
-            Update Password
-          </button>
-          <p className='text-center mt-4'>Kembali ke <a href='/' className='text-[#4651CE] font-semibold'>Beranda</a></p>
-        </form>
+        </div>
+      </div>
+
+      {/* Right side - Reset Password Form */}
+      <div className="w-full lg:w-2/5 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white">
+        <div className="w-full max-w-[400px] px-8">
+          <div className="mb-12">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
+              Update Password
+            </h2>
+            <p className="text-sm text-gray-600">
+              Silakan masukkan password baru Anda
+            </p>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-8">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LockClosedIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </div>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-4 border border-gray-300 rounded-lg placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent sm:text-sm"
+                  placeholder="Password Baru"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ease-in-out relative"
+              >
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
+                </span>
+                Update Password
+              </button>
+            </div>
+
+            <div className="flex items-center justify-center mt-8">
+              <div className="text-sm">
+                <a href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
+                  Kembali ke Beranda
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

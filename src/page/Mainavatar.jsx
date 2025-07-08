@@ -8,7 +8,6 @@ export function Mainavatar(){
     return (
         <>
             <Loader />
-            <Leva hidden />
             <UI />
             <Canvas shadows camera={{ position: [0, 0, 1], fov: 40 }} style={{ pointerEvents: 'none' }} >
             <Experience />
