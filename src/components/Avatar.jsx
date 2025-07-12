@@ -210,8 +210,8 @@ const corresponding = {
 let setupMode = false;
 
 export function Avatar(props) {
-  const { nodes, materials, scene } = useGLTF("/models/hijabavatar.glb");
-  const { animations } = useGLTF("/models/animation2.glb");
+  const { nodes, materials, scene } = useGLTF("/models/geriarti.glb");
+  const { animations } = useGLTF("/models/geriarti-animation.glb");
   const { message, onMessagePlayed, audioInstance } = useChat();
   
   // Initialize all state variables at the top
@@ -238,31 +238,27 @@ export function Avatar(props) {
     action.reset()
       .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
       .play();
-
-    const isIdleAnimation = ["idle_three", "idle_one", "idle_two"].includes(animation);
+    const isIdleAnimation = ["animation-idle-three", "animation-idle-one"].includes(animation);
     action.clampWhenFinished = true;
     action.loop = isIdleAnimation ? THREE.LoopOnce : THREE.LoopOnce;
     
     const onFinished = (e) => {
       if (!isIdleAnimation) {
-        setAnimation("idle_three");
+        setAnimation("animation-idle-one");
         setFacialExpression("");
         return;
       }
       
       let nextAnimation;
       switch(animation) {
-        case "idle_three":
-          nextAnimation = "idle_one";
+        case "animation-idle-one":
+          nextAnimation = "animation-idle-three";
           break;
-        case "idle_one":
-          nextAnimation = "idle_two";
-          break;
-        case "idle_two":
-          nextAnimation = "idle_three";
+        case "animation-idle-three":
+          nextAnimation = "animation-idle-one";
           break;
         default:
-          nextAnimation = "idle_three";
+          nextAnimation = "animation-idle-one";
       }
       setAnimation(nextAnimation);
     };
@@ -278,7 +274,7 @@ export function Avatar(props) {
   // Message effect
   useEffect(() => {
     if (!message) {
-      setAnimation("idle_three");
+      setAnimation("animation-idle-one");
       setFacialExpression("");
       return;
     }
@@ -485,14 +481,14 @@ export function Avatar(props) {
         morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences}
       />
       <skinnedMesh
-        geometry={nodes.Wolf3D_Headwear.geometry}
-        material={materials.Wolf3D_Headwear}
-        skeleton={nodes.Wolf3D_Headwear.skeleton}
+        geometry={nodes.Wolf3D_Hair.geometry}
+        material={materials.Wolf3D_Hair}
+        skeleton={nodes.Wolf3D_Hair.skeleton}
       />
       <skinnedMesh
-        geometry={nodes.Wolf3D_Outfit_Top.geometry}
-        material={materials.Wolf3D_Outfit_Top}
-        skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
+        geometry={nodes.Wolf3D_Body.geometry}
+        material={materials.Wolf3D_Body}
+        skeleton={nodes.Wolf3D_Body.skeleton}
       />
       <skinnedMesh
         geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
@@ -505,16 +501,16 @@ export function Avatar(props) {
         skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
       />
       <skinnedMesh
-        geometry={nodes.Wolf3D_Body.geometry}
-        material={materials.Wolf3D_Body}
-        skeleton={nodes.Wolf3D_Body.skeleton}
+        geometry={nodes.Wolf3D_Outfit_Top.geometry}
+        material={materials.Wolf3D_Outfit_Top}
+        skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
       />
     </group>
-  );
+  )
 }
 
 // useGLTF.preload("/models/gisca2.glb");
 // useGLTF.preload("/models/64f1a714fe61576b46f27ca2.glb");
-useGLTF.preload("/models/hijabavatar.glb");
+useGLTF.preload("/models/geriarti.glb");
 // useGLTF.preload("/models/66d6c1a81397d69042391d81_new.glb");
-useGLTF.preload("/models/animation2.glb");
+useGLTF.preload("/models/geriarti-animation.glb");
