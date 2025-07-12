@@ -221,7 +221,7 @@ export function Avatar(props) {
   const [winkRight, setWinkRight] = useState(false);
   const [facialExpression, setFacialExpression] = useState("");
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "idle_three") ? "idle_three" : animations[0].name
+    animations.find((a) => a.name === "animation-idle-three") ? "animation-idle-three" : animations[0].name
   );
 
   const group = useRef();
