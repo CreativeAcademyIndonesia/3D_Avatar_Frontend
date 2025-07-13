@@ -66,7 +66,7 @@ export const UI = ({ hidden, ...props }) => {
           <div className="flex-1"></div>
           
           {/* Chat message at bottom */}
-          <div className="w-full mb-32">
+          <div className="w-full mb-36">
             <ChatMessage messages={message} />
           </div>
         </div>

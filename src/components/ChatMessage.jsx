@@ -91,9 +91,13 @@ export const ChatMessage = ({ messages }) => {
                 ${currentParagraphIndex === index 
                   ? 'opacity-100 transform translate-y-0'
                   : 'opacity-0 transform translate-y-4 pointer-events-none'}
-                ${!messages?.audio ? 'text-gray-500 italic' : 'text-blue-900 font-medium'}
+                ${!messages?.audio ? 'text-gray-500 italic' : 'text-white font-semi-bold'}
                 break-words
+                drop-shadow-lg text-shadow
               `}
+              style={{
+                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'
+              }}
             >
               {paragraph}
             </p>
