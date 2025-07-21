@@ -54,7 +54,7 @@ export function Register() {
         >
           <div className="h-full w-full bg-black bg-opacity-20 flex items-center justify-center">
             <div className="text-center">
-              <h1 className="text-5xl font-bold text-white mb-4">Selamat Datang di Avatar Lecturer</h1>
+              <h1 className="text-5xl font-bold text-white mb-4">Selamat Datang di Nursing Education Virtual Assistant</h1>
               <p className="text-2xl text-white">Platform Pembelajaran Interaktif</p>
             </div>
           </div>
